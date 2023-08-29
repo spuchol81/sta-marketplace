@@ -1,0 +1,58 @@
+app:
+  stocks:
+    frozen: false
+    updater: around-initial
+    refresh-rate: 4000
+    initial-values:
+      vmw: 150
+      googl: 130
+      aapl: 180
+      amzn: 130
+      meta: 290
+      msft: 330
+
+spring:
+  application:
+    name: sta-marketplace
+  jpa:
+    generate-ddl: true
+  sql:
+    init:
+      mode: always
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: https://login.sso.az.run.withtanzu.com
+
+springdoc:
+  api-docs:
+    path: /api/openapi
+
+management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+      service: ${spring.application.name}
+      source: ${spring.application.name}-${random.uuid}
+  tracing:
+    # Set to true to forward tracing spans to a local Zipkin instance.
+    enabled: false
+    sampling:
+      probability: 0.1
+  otlp:
+    metrics:
+      export:
+        # Set to true to forward metrics to a local OpenTelemetry collector.
+        enabled: false
+        step: 30s
+logging:
+  pattern:
+    # Include tracing ids in log entries.
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+server:
+  port: ${PORT:8081}
