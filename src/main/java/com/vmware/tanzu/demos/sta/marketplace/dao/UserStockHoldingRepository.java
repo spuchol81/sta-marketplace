@@ -17,10 +17,8 @@
 package com.vmware.tanzu.demos.sta.marketplace.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.Nullable;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserStockHoldingRepository extends JpaRepository<UserStockHolding, String> {
@@ -30,19 +28,4 @@ public interface UserStockHoldingRepository extends JpaRepository<UserStockHoldi
 
     @Nullable
     UserStockHolding findByUserAndSymbol(String user, String symbol);
-
-    @Query("select sv from StockValue sv, UserStockHolding h where sv.symbol = h.symbol and h.user = :user group by sv.symbol order by sv.updateTime desc")
-    List<Equities> findEquitiesByUser(String user);
-
-    interface Equities {
-        String getSymbol();
-
-        BigDecimal getPrice();
-
-        Integer getSharesOwned();
-
-        default BigDecimal getTotal() {
-            return getPrice().multiply(BigDecimal.valueOf(getSharesOwned()));
-        }
-    }
 }
