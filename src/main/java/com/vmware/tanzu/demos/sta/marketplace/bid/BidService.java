@@ -47,9 +47,7 @@ class BidService {
 
         var userAccount = uar.findByUser(user);
         if (userAccount == null) {
-            userAccount = new UserAccount();
-            userAccount.setUser(user);
-            userAccount.setBalance(BigDecimal.ZERO);
+            throw new IllegalArgumentException("Cannot find user: " + user);
         }
 
         final var tx = new UserStockTransaction();
