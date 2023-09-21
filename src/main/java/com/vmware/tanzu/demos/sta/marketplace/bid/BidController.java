@@ -69,8 +69,13 @@ class BidController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        final var sharesOwned = bidService.saveUserStockTransaction(bidRequest.user(), bidRequest.symbol(), bidRequest.shares());
-        return ResponseEntity.ok(new BidResponse(bidRequest.user(), bidRequest.symbol(), sharesOwned));
+        try {
+            final var sharesOwned = bidService.saveUserStockTransaction(bidRequest.user(), bidRequest.symbol(), bidRequest.shares());
+            return ResponseEntity.ok(new BidResponse(bidRequest.user(), bidRequest.symbol(), sharesOwned));
+        } catch (IllegalArgumentException e) {
+            logger.warn("Failed to place bid request from {}: {} x {}", bidRequest.user(), bidRequest.shares(), bidRequest.symbol(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @ExceptionHandler
