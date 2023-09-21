@@ -80,7 +80,19 @@ class BidService {
         userStockHolding.setSharesOwned(newSharesOwned);
         ushr.save(userStockHolding);
 
-        // TODO adjust stock price according to past transactions
+        var coeff = BigDecimal.ONE;
+        if (shares > 0) {
+            coeff = BigDecimal.valueOf(1.1);
+        } else if (shares < 0) {
+            coeff = BigDecimal.valueOf(0.9);
+        }
+
+        final var newPrice = stock.getPrice().multiply(coeff);
+        final var sv = new StockValue();
+        sv.setSymbol(symbol);
+        sv.setPrice(newPrice);
+        sv.setUpdateTime(ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        svr.save(sv);
 
         return newSharesOwned;
     }

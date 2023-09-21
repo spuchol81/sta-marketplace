@@ -17,6 +17,7 @@
 package com.vmware.tanzu.demos.sta.marketplace.sim;
 
 import com.vmware.tanzu.demos.sta.marketplace.stock.Stock;
+import com.vmware.tanzu.demos.sta.marketplace.stock.StockProperties;
 import com.vmware.tanzu.demos.sta.marketplace.stock.StockService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -27,8 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -37,14 +37,15 @@ import static java.util.Comparator.comparing;
 class StockMarketplaceSimulator {
     private final Logger logger = LoggerFactory.getLogger(StockMarketplaceSimulator.class);
     private final StockService stockService;
-    private final StockUpdater stockUpdater;
+    private final Map<String, StockUpdater> stockUpdaters = new HashMap<>(8);
     private final boolean frozen;
+    private final StockProperties stockProperties;
 
-    StockMarketplaceSimulator(StockService stockService, StockUpdater stockUpdater, @Value("${app.stocks.frozen}") boolean frozen) {
+    StockMarketplaceSimulator(StockService stockService, List<StockUpdater> stockUpdaters, @Value("${app.stocks.frozen}") boolean frozen, StockProperties stockProperties) {
         this.stockService = stockService;
-        this.stockUpdater = stockUpdater;
+        this.stockProperties = stockProperties;
+        stockUpdaters.forEach(s -> this.stockUpdaters.put(s.id().toLowerCase().replace('_', '-'), s));
         this.frozen = frozen;
-        logger.info("Using StockUpdater: {}", stockUpdater);
     }
 
     @Scheduled(fixedDelayString = "${app.stocks.refresh-rate}")
@@ -61,7 +62,7 @@ class StockMarketplaceSimulator {
         final var stocks = stockService.getStockLastValues();
         final var newStocks = new ArrayList<StockUpdate>(stocks.size());
         for (final Stock stock : stocks) {
-            final BigDecimal newPrice = stockUpdater.update(stock.symbol(), stock.price());
+            final BigDecimal newPrice = findStockUpdater(stock.symbol()).update(stock.symbol(), stock.price());
             final StockUpdate up = new StockUpdate(stock.symbol(), stock.price(), newPrice);
             newStocks.add(up);
             stockService.updateStockValue(up.symbol, up.newPrice);
@@ -72,6 +73,18 @@ class StockMarketplaceSimulator {
             final var newStocksStr = newStocks.stream().map(StockUpdate::toString).collect(Collectors.joining(", "));
             logger.info("Stocks updated: {}", newStocksStr);
         }
+    }
+
+    private StockUpdater findStockUpdater(String symbol) {
+        final var id = stockProperties.updaters().get(symbol);
+        if (id == null) {
+            throw new IllegalStateException("Cannot find StockUpdater for symbol: " + symbol);
+        }
+        final var updater = stockUpdaters.get(id);
+        if (updater == null) {
+            throw new IllegalStateException("Cannot find StockUpdater for symbol: " + symbol);
+        }
+        return updater;
     }
 
     record StockUpdate(String symbol, BigDecimal oldPrice, BigDecimal newPrice) {

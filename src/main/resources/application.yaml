@@ -1,7 +1,6 @@
 app:
   stocks:
     frozen: false
-    updater: around-initial
     refresh-rate: 4000
     initial-values:
       vmw: 150
@@ -10,6 +9,13 @@ app:
       amzn: 130
       meta: 290
       msft: 330
+    updaters:
+      vmw: default
+      googl: around-initial
+      aapl: steady-growth
+      amzn: default
+      meta: default
+      msft: default
 
 spring:
   application:

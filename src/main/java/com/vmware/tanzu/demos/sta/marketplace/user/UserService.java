@@ -97,8 +97,10 @@ public class UserService {
         if (userAccount == null) {
             return Optional.empty();
         }
-        userAccount.setBalance(userAccount.getBalance().add(balanceUpdate));
-        uar.save(userAccount);
+        if (balanceUpdate != null) {
+            userAccount.setBalance(userAccount.getBalance().add(balanceUpdate));
+            uar.save(userAccount);
+        }
         return Optional.of(getUserInfo(user).orElseThrow());
     }
 

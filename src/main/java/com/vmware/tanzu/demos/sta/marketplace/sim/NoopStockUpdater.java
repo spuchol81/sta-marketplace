@@ -16,10 +16,24 @@
 
 package com.vmware.tanzu.demos.sta.marketplace.sim;
 
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 
-interface StockUpdater {
-    BigDecimal update(String symbol, BigDecimal price);
+@Component
+class NoopStockUpdater implements StockUpdater {
+    @Override
+    public BigDecimal update(String symbol, BigDecimal price) {
+        return price;
+    }
 
-    String id();
+    @Override
+    public String id() {
+        return "NOOP";
+    }
+
+    @Override
+    public String toString() {
+        return id();
+    }
 }

@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.Random;
 
 @Component
-@ConditionalOnProperty(name = "app.stocks.updater", havingValue = "around-initial")
 class AroundInitialStockUpdater implements StockUpdater {
     private final StockProperties stockProperties;
     private final Random random = new Random();
@@ -50,7 +49,12 @@ class AroundInitialStockUpdater implements StockUpdater {
     }
 
     @Override
-    public String toString() {
+    public String id() {
         return "AROUND_INITIAL";
+    }
+
+    @Override
+    public String toString() {
+        return id();
     }
 }

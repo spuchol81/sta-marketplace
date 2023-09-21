@@ -16,14 +16,12 @@
 
 package com.vmware.tanzu.demos.sta.marketplace.sim;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Random;
 
 @Component
-@ConditionalOnProperty(name = "app.stocks.updater", havingValue = "penny-stock")
 class PennyStockUpdater implements StockUpdater {
     private final Random random = new Random();
 
@@ -42,7 +40,12 @@ class PennyStockUpdater implements StockUpdater {
     }
 
     @Override
-    public String toString() {
+    public String id() {
         return "PENNY_STOCK";
+    }
+
+    @Override
+    public String toString() {
+        return id();
     }
 }

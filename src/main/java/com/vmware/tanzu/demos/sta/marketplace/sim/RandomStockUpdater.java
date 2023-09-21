@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.util.Random;
 
 @Component
-@ConditionalOnMissingBean(StockUpdater.class)
 class RandomStockUpdater implements StockUpdater {
     private final Random random = new Random();
 
@@ -33,7 +32,12 @@ class RandomStockUpdater implements StockUpdater {
     }
 
     @Override
-    public String toString() {
+    public String id() {
         return "RANDOM";
+    }
+
+    @Override
+    public String toString() {
+        return id();
     }
 }

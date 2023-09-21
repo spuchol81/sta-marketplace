@@ -17,9 +17,15 @@
 package com.vmware.tanzu.demos.sta.marketplace.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface UserStockTransactionRepository extends JpaRepository<UserStockTransaction, String> {
     List<UserStockTransaction> findByUserOrderByTransactionTime(String user);
+
+    @Query("select sum(tx.shares) from UserStockTransaction tx where tx.stockSymbol = :symbol and tx.transactionTime >=:start and tx.transactionTime <= :end")
+    BigDecimal sumStockTransactionsInTimeRange(String symbol, ZonedDateTime start, ZonedDateTime end);
 }

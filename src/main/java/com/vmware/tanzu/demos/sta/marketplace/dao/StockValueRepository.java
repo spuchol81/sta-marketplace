@@ -20,6 +20,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface StockValueRepository extends JpaRepository<StockValue, String> {
@@ -30,4 +31,8 @@ public interface StockValueRepository extends JpaRepository<StockValue, String> 
 
     @Query("select distinct s.symbol from StockValue s group by s.symbol")
     List<String> findSymbols();
+
+    @Query("select s from StockValue s where s.symbol = :symbol and s.updateTime >= :time order by s.updateTime limit 1")
+    @Nullable
+    StockValue findStockAroundTime(String symbol, ZonedDateTime time);
 }

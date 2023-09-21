@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.Random;
 
 @Component
-@ConditionalOnProperty(name = "app.stocks.updater", havingValue = "steady-growth")
 class SteadyGrowthStockUpdater implements StockUpdater {
     private final StockProperties stockProperties;
     private final Random random = new Random();
@@ -50,7 +49,12 @@ class SteadyGrowthStockUpdater implements StockUpdater {
     }
 
     @Override
-    public String toString() {
+    public String id() {
         return "STEADY_GROWTH";
+    }
+
+    @Override
+    public String toString() {
+        return id();
     }
 }

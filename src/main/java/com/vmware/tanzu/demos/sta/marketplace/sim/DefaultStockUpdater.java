@@ -16,10 +16,29 @@
 
 package com.vmware.tanzu.demos.sta.marketplace.sim;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
+import java.util.Random;
 
-interface StockUpdater {
-    BigDecimal update(String symbol, BigDecimal price);
+@Component
+class DefaultStockUpdater implements StockUpdater {
+    private final Random random = new Random();
 
-    String id();
+    @Override
+    public BigDecimal update(String symbol, BigDecimal price) {
+        final var coeff = random.nextDouble(0.95, 1.05);
+        return price.multiply(BigDecimal.valueOf(coeff));
+    }
+
+    @Override
+    public String id() {
+        return "DEFAULT";
+    }
+
+    @Override
+    public String toString() {
+        return id();
+    }
 }

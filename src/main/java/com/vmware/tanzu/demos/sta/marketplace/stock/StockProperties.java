@@ -26,6 +26,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "app.stocks")
 public class StockProperties {
     private Map<String, BigDecimal> initialValues;
+    private Map<String, String> updaters;
 
     public Map<String, BigDecimal> initialValues() {
         return initialValues;
@@ -33,5 +34,13 @@ public class StockProperties {
 
     public void setInitialValues(Map<String, BigDecimal> initialValues) {
         this.initialValues = Map.copyOf(initialValues);
+    }
+
+    public Map<String, String> updaters() {
+        return updaters;
+    }
+
+    public void setUpdaters(Map<String, String> updaters) {
+        this.updaters = updaters;
     }
 }
