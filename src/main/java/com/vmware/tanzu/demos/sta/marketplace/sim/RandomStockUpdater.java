@@ -16,7 +16,6 @@
 
 package com.vmware.tanzu.demos.sta.marketplace.sim;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
