@@ -28,7 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -37,14 +38,14 @@ import static java.util.Comparator.comparing;
 class StockMarketplaceSimulator {
     private final Logger logger = LoggerFactory.getLogger(StockMarketplaceSimulator.class);
     private final StockService stockService;
-    private final Map<String, StockUpdater> stockUpdaters = new HashMap<>(8);
     private final boolean frozen;
     private final StockProperties stockProperties;
+    private final StockUpdaterLocator stockUpdaterLocator;
 
-    StockMarketplaceSimulator(StockService stockService, List<StockUpdater> stockUpdaters, @Value("${app.stocks.frozen}") boolean frozen, StockProperties stockProperties) {
+    StockMarketplaceSimulator(StockService stockService, @Value("${app.stocks.frozen}") boolean frozen, StockProperties stockProperties, StockUpdaterLocator stockUpdaterLocator) {
         this.stockService = stockService;
         this.stockProperties = stockProperties;
-        stockUpdaters.forEach(s -> this.stockUpdaters.put(s.id().toLowerCase().replace('_', '-'), s));
+        this.stockUpdaterLocator = stockUpdaterLocator;
         this.frozen = frozen;
     }
 
@@ -76,11 +77,7 @@ class StockMarketplaceSimulator {
     }
 
     private StockUpdater findStockUpdater(String symbol) {
-        final var id = stockProperties.updaters().get(symbol);
-        if (id == null) {
-            throw new IllegalStateException("Cannot find StockUpdater for symbol: " + symbol);
-        }
-        final var updater = stockUpdaters.get(id);
+        final var updater = stockUpdaterLocator.getUpdater(symbol);
         if (updater == null) {
             throw new IllegalStateException("Cannot find StockUpdater for symbol: " + symbol);
         }
