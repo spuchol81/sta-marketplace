@@ -33,8 +33,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class ApplicationTests {
     @Container
-    /*@ServiceConnection
-    static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:15-alpine");*/
+    @ServiceConnection
+    static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:15-alpine");
     @Autowired
     private TestRestTemplate client;
 
