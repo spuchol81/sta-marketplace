@@ -29,7 +29,7 @@ spring:
     oauth2:
       resource-server:
         jwt:
-          issuer-uri: https://login.sso.az.run.withtanzu.com
+          issuer-uri: https://login.default.tanzu.aks.spuchol.me
 
 springdoc:
   api-docs:
