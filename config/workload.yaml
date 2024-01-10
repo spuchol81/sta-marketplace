@@ -2,11 +2,14 @@ apiVersion: carto.run/v1alpha1
 kind: Workload
 metadata:
   name: sta-marketplace
+  annotations:
+    autoscaling.knative.dev/min-scale: "1"
   labels:
     apps.tanzu.vmware.com/workload-type: web
     apps.tanzu.vmware.com/has-tests: "true"
     app.kubernetes.io/part-of: sta-marketplace
-    networking.knative.dev/visibility: cluster-local
+    apis.apps.tanzu.vmware.com/register-api: "true"
+
 spec:
   source:
     git:
@@ -24,6 +27,14 @@ spec:
     limits:
       memory: 2Gi
   params:
+  - name: api_descriptor
+    value:
+      type: openapi
+      location:
+        path: "/api/openapi"
+      description: "A set of API endpoints to manage the resources within the STA app."
+      system: sta
+      owner: team-vmware-tanzu-se
   - name: annotations
     value:
       autoscaling.knative.dev/minScale: "0"
@@ -41,8 +52,13 @@ spec:
       apiVersion: services.apps.tanzu.vmware.com/v1alpha1
       kind: ResourceClaim
       name: sta-marketplace-config
+  #- name: db
+  #  ref:
+  #    apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+  #    kind: ClassClaim
+  #    name: sta-marketplace-db
   - name: db
     ref:
       apiVersion: services.apps.tanzu.vmware.com/v1alpha1
-      kind: ClassClaim
-      name: sta-marketplace-db
+      kind: ResourceClaim
+      name: my-restored-db
